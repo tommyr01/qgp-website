@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Header() {
   return (
@@ -7,7 +8,7 @@ export default function Header() {
         <div className="header-content-wrapper">
           <div className="header-logo-wrapper">
             <Link href="/" className="header-logo-link">
-              <img src="/qgp-logo.svg" alt="QGP Logo" className="header-logo" />
+              <Image src="/qgp-logo.svg" alt="QGP Logo" className="header-logo" width={74} height={74} />
             </Link>
           </div>
           <div className="header-nav-menu-wrapper middle">
@@ -28,7 +29,7 @@ export default function Header() {
               </div>
               <div className="header-nav-list-item middle">
                 <Link href="/contact" className="header-nav-link w-nav-link">
-                  <div className="text-300 bold">Let's Talk</div>
+                  <div className="text-300 bold">Let&apos;s Talk</div>
                 </Link>
               </div>
               <div className="header-nav-list-item middle">
