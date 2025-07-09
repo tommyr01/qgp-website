@@ -358,7 +358,7 @@ body {
   width: 95vw;
   height: auto;
   min-height: 800px;
-  margin: 40px auto 0 auto;
+  margin: 0 auto;
   padding: 60px 40px;
   display: flex;
   flex-direction: column;
