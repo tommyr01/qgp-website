@@ -14,7 +14,7 @@ export default function Home() {
               </span>
               <span className="text-span-2"> AI speed </span>
               <br />
-              <span style={{ fontSize: '20px', fontWeight: 500, lineHeight: '1.0' }}>
+              <span className="subheading-text">
                 Combining strategic consulting, DFY systems and proprietary AI workflows to generate maximum output with minimal input.
               </span>
             </p>
