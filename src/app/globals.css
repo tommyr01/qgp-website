@@ -477,7 +477,6 @@ body {
   align-items: center;
   display: flex;
   width: 100%;
-  position: relative;
 }
 
 .header-logo-wrapper {
@@ -504,9 +503,8 @@ body {
 .header-nav-menu-wrapper.middle {
   width: auto;
   margin-top: 0px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
 }
 
 .header-nav-menu-list {
@@ -521,6 +519,8 @@ body {
 
 .header-nav-menu-list.middle {
   justify-content: center;
+  align-items: center;
+  margin: 0;
 }
 
 .header-nav-link {
@@ -548,6 +548,8 @@ body {
 .header-nav-list-item.middle {
   padding-left: 14px;
   padding-right: 14px;
+  align-items: center;
+  justify-content: center;
 }
 
 .dropdown-wrapper.user {
