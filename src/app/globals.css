@@ -356,7 +356,7 @@ body {
   background-image: linear-gradient(113deg, #f5cbd9 9%, #c7bdd9 32%, #97aed8 48% 76%, #fff);
   border-radius: 48px;
   width: 95vw;
-  height: 600px;
+  height: 900px;
   overflow: hidden;
   margin: 0 auto;
   padding: 60px 40px;
@@ -698,7 +698,7 @@ body {
   }
 
   .section.template-pages-hero {
-    height: 600px !important;
+    height: 900px !important;
     overflow: hidden !important;
     padding: 60px 64px !important;
   }
@@ -735,7 +735,7 @@ body {
 
 @media screen and (max-width: 991px) {
   .section.template-pages-hero {
-    height: 600px !important;
+    height: 900px !important;
     overflow: hidden !important;
     padding: 40px 32px !important;
   }
@@ -791,7 +791,7 @@ body {
   }
 
   .section.template-pages-hero {
-    height: 600px !important;
+    height: 900px !important;
     overflow: hidden !important;
     padding: 30px 20px !important;
   }
