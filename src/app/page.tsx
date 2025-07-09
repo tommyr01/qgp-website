@@ -33,6 +33,21 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <footer className="footer-section">
+        <div className="container-default w-container">
+          <div className="footer-content">
+            <Image 
+              src="/qgp-logo.svg" 
+              alt="QGP Logo" 
+              className="footer-logo"
+              width={200}
+              height={69}
+            />
+          </div>
+        </div>
+      </footer>
     </main>
   )
 } 

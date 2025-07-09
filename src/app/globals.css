@@ -435,6 +435,30 @@ body {
     display: block;
   }
 
+/* Footer specific styles */
+.footer-section {
+  background-color: #fff;
+  padding: 60px 0;
+  border-top: 1px solid var(--neutral--300);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-logo {
+  height: 69px;
+  width: auto;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.footer-logo:hover {
+  opacity: 1;
+}
+
 /* Header specific styles from Webflow */
 .header-wrapper {
   border-bottom: 1px solid var(--neutral--300);
