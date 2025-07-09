@@ -719,15 +719,17 @@ body {
 /* Responsive styles */
 @media screen and (min-width: 1920px) {
   .color-neutral-400.mg-bottom-40px {
-    font-size: 56px;
+    font-size: 48px;
     line-height: 1.1;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
   }
 
   .section.template-pages-hero {
     height: 900px !important;
     overflow: hidden !important;
-    padding: 60px 64px !important;
+    padding: 40px 64px !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .bold-text {
@@ -736,12 +738,16 @@ body {
 
   .text-span {
     min-width: 1100px;
-    font-size: 50px;
+    font-size: 44px;
   }
 
   .text-span-2 {
     color: #fff;
-    font-size: 60px;
+    font-size: 52px;
+  }
+
+  .image-container {
+    margin-top: -20px !important;
   }
 
   .image {
@@ -749,6 +755,7 @@ body {
     max-width: 800px !important;
     height: 560px !important;
     margin: 0 !important;
+    position: relative !important;
   }
 
   .header-nav-menu-wrapper.middle {
