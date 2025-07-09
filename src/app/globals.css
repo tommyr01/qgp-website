@@ -357,7 +357,7 @@ body {
   border-radius: 48px;
   width: 95vw;
   height: auto;
-  min-height: 800px;
+  min-height: 400px;
   margin: 0 auto;
   padding: 60px 40px;
   display: flex;
@@ -699,7 +699,7 @@ body {
 
   .section.template-pages-hero {
     height: auto !important;
-    min-height: 800px !important;
+    min-height: 400px !important;
     max-height: none !important;
     padding: 60px 64px !important;
   }
@@ -737,7 +737,7 @@ body {
 @media screen and (max-width: 991px) {
   .section.template-pages-hero {
     height: auto !important;
-    min-height: 600px !important;
+    min-height: 400px !important;
     max-height: none !important;
     padding: 40px 32px !important;
   }
@@ -794,7 +794,7 @@ body {
 
   .section.template-pages-hero {
     height: auto !important;
-    min-height: 500px !important;
+    min-height: 400px !important;
     max-height: none !important;
     padding: 30px 20px !important;
   }
