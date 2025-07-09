@@ -428,12 +428,12 @@ body {
   margin-top: 30px;
 }
 
-.image {
-  width: 600px;
-  max-width: 600px;
-  height: 600px;
-  display: block;
-}
+  .image {
+    width: 400px;
+    max-width: 400px;
+    height: 400px;
+    display: block;
+  }
 
 /* Header specific styles from Webflow */
 .header-wrapper {

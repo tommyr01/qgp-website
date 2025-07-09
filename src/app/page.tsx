@@ -23,12 +23,12 @@ export default function Home() {
           {/* Image Block (bottom) */}
           <div className="image-container">
             <Image 
-              src="/AI BRAIN (1800 x 1600 px).svg" 
+              src="/ai brain small.svg" 
               loading="lazy" 
               alt="AI Brain Graphic" 
               className="image"
-              width={850}
-              height={800}
+              width={400}
+              height={400}
             />
           </div>
         </div>
