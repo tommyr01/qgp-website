@@ -429,9 +429,9 @@ body {
 }
 
   .image {
-    width: 450px;
-    max-width: 450px;
-    height: 400px;
+    width: 400px;
+    max-width: 400px;
+    height: 280px;
     display: block;
   }
 
@@ -742,9 +742,9 @@ body {
   }
 
   .image {
-    width: 450px;
-    max-width: 450px;
-    height: 450px;
+    width: 400px;
+    max-width: 400px;
+    height: 400px;
   }
 
   .header-nav-menu-wrapper.middle {
