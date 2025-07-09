@@ -773,12 +773,12 @@ body {
   }
 
   .header-nav-menu-wrapper.middle {
-    margin-top: 38px;
+    margin-top: 0px !important;
   }
 
   .social-media-grid-top.header {
     justify-content: end;
-    margin-top: 37px;
+    margin-top: 0px !important;
   }
 }
 
