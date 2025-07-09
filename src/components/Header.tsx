@@ -28,7 +28,7 @@ export default function Header() {
                 </div>
               </div>
               <div className="header-nav-list-item middle">
-                <Link href="/contact" className="header-nav-link w-nav-link">
+                <Link href="https://calendar.app.google/SNxZ6k3fbLaj17Jk9" target="_blank" className="header-nav-link w-nav-link">
                   <div className="text-300 bold">Let&apos;s Talk</div>
                 </Link>
               </div>
