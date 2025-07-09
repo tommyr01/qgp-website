@@ -2,9 +2,9 @@ import { getPostBySlug, getAllPostSlugs } from '../../../lib/blog'
 import { notFound } from 'next/navigation'
 
 interface BlogPostProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -15,7 +15,8 @@ export async function generateStaticParams() {
 }
 
 export default async function BlogPost({ params }: BlogPostProps) {
-  const post = await getPostBySlug(params.slug)
+  const { slug } = await params
+  const post = await getPostBySlug(slug)
 
   if (!post) {
     notFound()
