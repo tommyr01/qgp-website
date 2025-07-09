@@ -27,8 +27,8 @@ export default function Home() {
               loading="lazy" 
               alt="AI Brain Graphic" 
               className="image"
-              width={400}
-              height={280}
+              width={800}
+              height={560}
             />
           </div>
         </div>
