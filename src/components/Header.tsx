@@ -14,18 +14,9 @@ export default function Header() {
           <div className="header-nav-menu-wrapper middle">
             <nav className="header-nav-menu-list middle w-list-unstyled" role="list">
               <div className="header-nav-list-item middle">
-                <div className="dropdown-wrapper user w-dropdown" data-hover="true" data-delay="0">
-                  <div className="dropdown-toggle w-dropdown-toggle" id="w-dropdown-toggle-blog" aria-controls="w-dropdown-list-blog" aria-haspopup="menu" aria-expanded="false" role="button" tabIndex={0}>
-                    <div className="text-300 bold">Blog</div>
-                  </div>
-                  <nav className="dropdown-column-wrapper small no-static w-dropdown-list" id="w-dropdown-list-blog" aria-labelledby="w-dropdown-toggle-blog">
-                    <div className="dropdown-pd small">
-                      <div className="grid-1-column dropdown-link-column single">
-                        <div className="dropdown-link">Coming Soon</div>
-                      </div>
-                    </div>
-                  </nav>
-                </div>
+                <Link href="/blog" className="header-nav-link w-nav-link">
+                  <div className="text-300 bold">Blog</div>
+                </Link>
               </div>
               <div className="header-nav-list-item middle">
                 <Link href="https://calendar.app.google/SNxZ6k3fbLaj17Jk9" target="_blank" className="header-nav-link w-nav-link">
