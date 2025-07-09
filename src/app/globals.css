@@ -429,9 +429,9 @@ body {
 }
 
 .image {
-  width: 400px;
-  max-width: 400px;
-  height: 400px;
+  width: 600px;
+  max-width: 600px;
+  height: 600px;
   display: block;
 }
 
