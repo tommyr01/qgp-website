@@ -307,7 +307,7 @@ export default function ToolComparison() {
                 </button>
                 {tool.demoUrl && (
                   <button
-                    onClick={() => handleDemoClick(tool.name, tool.demoUrl)}
+                    onClick={() => handleDemoClick(tool.name, tool.demoUrl!)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Watch Demo

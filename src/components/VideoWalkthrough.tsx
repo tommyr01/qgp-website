@@ -126,7 +126,7 @@ const caseStudies: CaseStudy[] = [
     company: 'ScaleUp Consulting',
     industry: 'Business Consulting',
     teamSize: '75 employees',
-    challenge: 'Multiple client engagements required extensive meeting documentation. Manual processes didn't scale with growth.',
+    challenge: 'Multiple client engagements required extensive meeting documentation. Manual processes didn\'t scale with growth.',
     solution: 'Zapier-based automation connecting multiple tools with custom AI prompts for different meeting types.',
     results: {
       timeSaved: '70%',
