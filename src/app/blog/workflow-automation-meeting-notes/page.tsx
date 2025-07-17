@@ -114,13 +114,12 @@ export default async function MeetingAutomationBlogPost() {
       <StructuredData type="Article" data={articleData} />
       <StructuredData type="HowTo" data={howToData} />
       <Analytics />
-      <TableOfContents />
       <SocialShare 
         title={post.title}
         url={`https://quantumgrowthpartners.com/blog/workflow-automation-meeting-notes`}
         description={post.excerpt}
       />
-      <main className="page-wrapper">
+      
       {/* Print-only header */}
       <div className="print-only" style={{ display: 'none' }}>
         <div style={{ borderBottom: '2px solid #000', paddingBottom: '20px', marginBottom: '30px' }}>
@@ -135,41 +134,58 @@ export default async function MeetingAutomationBlogPost() {
         </div>
       </div>
 
-      {/* Blog Post Hero */}
-      <section className="section blog-post-hero no-print">
-        <div className="container-default w-container">
-          <div className="inner-container _640px center">
-            <div className="text-center">
-              <div className="mg-bottom-24px">
-                <div className="badge-primary small light category">
+      <main className="page-wrapper">
+        {/* Breadcrumb Navigation */}
+        <section className="blog-breadcrumb">
+          <div className="container-default w-container">
+            <div className="breadcrumb-content">
+              <Link href="/blog" className="breadcrumb-link">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Back to Blog
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Blog Post Header */}
+        <section className="blog-post-header">
+          <div className="container-default w-container">
+            <div className="blog-post-header-content">
+              <div className="post-meta">
+                <span className="post-category-tag">
                   {post.category}
-                </div>
+                </span>
+                <span className="post-date">
+                  {post.date}
+                </span>
               </div>
-              <h1 className="heading-h1-size color-neutral-400 mg-bottom-32px">
+              <h1 className="post-title">
                 {post.title}
               </h1>
-              <p className="paragraph-large color-neutral-600 mg-bottom-40px">
+              <p className="post-excerpt">
                 {post.excerpt}
               </p>
-              <div className="author-container mg-bottom-48px">
-                <div className="text-300 color-neutral-500">
-                  {post.date} • By {post.author}
+              <div className="post-author-section">
+                <div className="author-avatar-large"></div>
+                <div className="author-info">
+                  <div className="author-name-large">{post.author}</div>
+                  <div className="author-meta">12 min read</div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Blog Post Content */}
-      <section className="section">
-        <div className="container-default w-container">
-          <div className="inner-container _640px center">
-            <div className="card blog-post-content">
-              <div className="pd---content-inside-card large">
+        {/* Blog Post Content */}
+        <section className="blog-post-content-section">
+          <div className="container-default w-container">
+            <div className="post-content-wrapper">
+              <article className="post-content">
                 {/* First part of content */}
                 <div 
-                  className="rich-text w-richtext"
+                  className="prose prose-lg"
                   dangerouslySetInnerHTML={{ __html: beforeComparison }}
                 />
                 
@@ -183,7 +199,7 @@ export default async function MeetingAutomationBlogPost() {
                 
                 {/* Middle part of content */}
                 <div 
-                  className="rich-text w-richtext"
+                  className="prose prose-lg"
                   dangerouslySetInnerHTML={{ __html: betweenComponents }}
                 />
                 
@@ -194,7 +210,7 @@ export default async function MeetingAutomationBlogPost() {
                 
                 {/* Content before downloads */}
                 <div 
-                  className="rich-text w-richtext"
+                  className="prose prose-lg"
                   dangerouslySetInnerHTML={{ __html: beforeDownloads }}
                 />
                 
@@ -203,7 +219,7 @@ export default async function MeetingAutomationBlogPost() {
                 
                 {/* Content before case studies */}
                 <div 
-                  className="rich-text w-richtext"
+                  className="prose prose-lg"
                   dangerouslySetInnerHTML={{ __html: beforeCaseStudies }}
                 />
                 
@@ -214,34 +230,73 @@ export default async function MeetingAutomationBlogPost() {
                 
                 {/* Final part of content */}
                 <div 
-                  className="rich-text w-richtext"
+                  className="prose prose-lg"
                   dangerouslySetInnerHTML={{ __html: afterDownloads }}
                 />
+              </article>
+              
+              {/* Sidebar with Table of Contents */}
+              <aside className="post-sidebar">
+                <div className="sidebar-widget">
+                  <h3 className="sidebar-title">Table of Contents</h3>
+                  <TableOfContents />
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        {/* Newsletter CTA */}
+        <section className="blog-post-newsletter">
+          <div className="container-default w-container">
+            <div className="newsletter-card-inline">
+              <div className="newsletter-content-inline">
+                <h3 className="newsletter-title-inline">
+                  Want more workflow automation tips?
+                </h3>
+                <p className="newsletter-description-inline">
+                  Get proven automation strategies delivered to your inbox
+                </p>
+              </div>
+              <form className="newsletter-form-inline">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  className="newsletter-input-inline"
+                  required
+                />
+                <button type="submit" className="newsletter-btn-inline">
+                  Get Free Templates
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        {/* A/B Tested CTA Section */}
+        <ABTestCTA />
+
+        {/* Related Posts */}
+        <section className="related-posts">
+          <div className="container-default w-container">
+            <div className="related-posts-content">
+              <h3 className="related-posts-title">More automation guides you might like</h3>
+              <div className="related-posts-grid">
+                <Link href="/blog" className="related-post-card">
+                  <div className="related-post-category">AI & Automation</div>
+                  <h4 className="related-post-title">AI Tools for Small Business</h4>
+                  <div className="related-post-meta">8 min read</div>
+                </Link>
+                <Link href="/blog" className="related-post-card">
+                  <div className="related-post-category">Workflow Automation</div>
+                  <h4 className="related-post-title">Zapier vs Make.com Comparison</h4>
+                  <div className="related-post-meta">6 min read</div>
+                </Link>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* A/B Tested CTA Section */}
-      <ABTestCTA />
-
-      {/* Navigation */}
-      <section className="section small">
-        <div className="container-default w-container">
-          <div className="inner-container _640px center">
-            <div className="text-center">
-              <Link 
-                href="/blog" 
-                className="btn-secondary large"
-              >
-                ← Back to Blog
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
     </>
   )
 }

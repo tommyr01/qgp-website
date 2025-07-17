@@ -97,67 +97,55 @@ export default function TableOfContents() {
     return Math.round((completedItems / items.length) * 100)
   }
 
-  if (!isVisible) return null
-
   return (
-    <div className="fixed top-20 right-4 z-50 max-w-xs">
-      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-800">Table of Contents</h3>
-          <div className="text-sm text-gray-600">{getCompletionPercentage()}%</div>
+    <nav className="toc">
+      {/* Progress Bar */}
+      <div className="mb-4">
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${scrollProgress}%` }}
+          ></div>
         </div>
-
-        {/* Progress Bar */}
-        <div className="mb-4">
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${scrollProgress}%` }}
-            ></div>
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            {Math.round(scrollProgress)}% complete
-          </div>
-        </div>
-
-        {/* TOC Items */}
-        <div className="max-h-96 overflow-y-auto">
-          <ul className="space-y-1">
-            {items.map((item) => (
-              <li
-                key={item.id}
-                className={`flex items-center cursor-pointer transition-colors duration-200 ${
-                  item.level === 1 ? 'font-medium' : 'text-sm'
-                } ${
-                  item.level === 2 ? 'ml-4' : ''
-                } ${
-                  currentSection === item.id
-                    ? 'text-blue-600 bg-blue-50 rounded px-2 py-1'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded px-2 py-1'
-                }`}
-                onClick={() => scrollToSection(item.id)}
-              >
-                <div className="flex items-center gap-2 flex-1">
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    item.completed ? 'bg-green-500' : 
-                    currentSection === item.id ? 'bg-blue-500' : 'bg-gray-300'
-                  }`} />
-                  <span className="truncate">{item.title}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Estimated Reading Time */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Reading time</span>
-            <span>~12 min</span>
-          </div>
+        <div className="text-xs text-gray-500 mt-1">
+          {Math.round(scrollProgress)}% complete
         </div>
       </div>
-    </div>
+
+      {/* TOC Items */}
+      <ul className="toc-list space-y-1">
+        {items.map((item) => (
+          <li
+            key={item.id}
+            className={`flex items-center cursor-pointer transition-colors duration-200 ${
+              item.level === 1 ? 'font-medium' : 'text-sm'
+            } ${
+              item.level === 2 ? 'ml-4' : ''
+            } ${
+              currentSection === item.id
+                ? 'text-blue-600 bg-blue-50 rounded px-2 py-1'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded px-2 py-1'
+            }`}
+            onClick={() => scrollToSection(item.id)}
+          >
+            <div className="flex items-center gap-2 flex-1">
+              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                item.completed ? 'bg-green-500' : 
+                currentSection === item.id ? 'bg-blue-500' : 'bg-gray-300'
+              }`} />
+              <span className="truncate">{item.title}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {/* Estimated Reading Time */}
+      <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <span>Reading time</span>
+          <span>~12 min</span>
+        </div>
+      </div>
+    </nav>
   )
 }
