@@ -17,11 +17,11 @@ interface CalculatorResults {
   yearlyLoss: number
 }
 
-// Modern Card Component (following shadcn/ui patterns)
+// Modern Card Component (using project's design system)
 function Card({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={`bg-card text-card-foreground rounded-xl border shadow-sm ${className}`}
+      className={`bg-white rounded-xl border border-gray-200 shadow-sm ${className}`}
       {...props}
     >
       {children}
@@ -54,7 +54,7 @@ function CardContent({ className, children, ...props }: React.ComponentProps<"di
 function CardTitle({ className, children, ...props }: React.ComponentProps<"h3">) {
   return (
     <h3
-      className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
+      className={`text-2xl font-semibold leading-none tracking-tight text-gray-900 ${className}`}
       {...props}
     >
       {children}
@@ -65,7 +65,7 @@ function CardTitle({ className, children, ...props }: React.ComponentProps<"h3">
 function CardDescription({ className, children, ...props }: React.ComponentProps<"p">) {
   return (
     <p
-      className={`text-sm text-muted-foreground ${className}`}
+      className={`text-sm text-gray-600 ${className}`}
       {...props}
     >
       {children}
@@ -76,15 +76,15 @@ function CardDescription({ className, children, ...props }: React.ComponentProps
 // Modern Badge Component
 function Badge({ className, variant = "default", children, ...props }: React.ComponentProps<"span"> & { variant?: "default" | "secondary" | "destructive" | "outline" }) {
   const variants = {
-    default: "bg-primary text-primary-foreground hover:bg-primary/90",
-    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-    outline: "text-foreground border border-input hover:bg-accent hover:text-accent-foreground"
+    default: "bg-blue-500 text-white hover:bg-blue-600",
+    secondary: "bg-gray-100 text-gray-800 hover:bg-gray-200",
+    destructive: "bg-red-500 text-white hover:bg-red-600",
+    outline: "text-gray-700 border border-gray-300 hover:bg-gray-50"
   }
 
   return (
     <span
-      className={`inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}
+      className={`inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${variants[variant]} ${className}`}
       {...props}
     >
       {children}
@@ -103,9 +103,9 @@ function Slider({ value, onValueChange, min = 0, max = 100, step = 1, className,
 }) {
   return (
     <div className={`relative flex w-full touch-none select-none items-center ${className}`}>
-      <div className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-primary/20">
+      <div className="relative h-2 w-full grow overflow-hidden rounded-full bg-blue-100">
         <div
-          className="absolute h-full bg-primary transition-all"
+          className="absolute h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
           style={{
             width: `${((value[0] - min) / (max - min)) * 100}%`
           }}
@@ -122,7 +122,7 @@ function Slider({ value, onValueChange, min = 0, max = 100, step = 1, className,
         {...props}
       />
       <div
-        className="absolute block h-4 w-4 rounded-full border border-primary bg-background shadow-sm transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+        className="absolute block h-5 w-5 rounded-full border-2 border-blue-500 bg-white shadow-lg transition-all hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-50"
         style={{
           left: `${((value[0] - min) / (max - min)) * 100}%`,
           transform: 'translateX(-50%)'
@@ -226,18 +226,18 @@ export default function MeetingROICalculatorModern() {
   }
 
   return (
-    <div className="my-16 mx-auto max-w-7xl">
+    <div className="my-16 mx-auto max-w-7xl px-6 py-12 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 rounded-3xl shadow-xl border border-blue-100">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center w-12 h-12 bg-primary rounded-xl mb-6">
-          <svg className="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-6 shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </div>
-        <h2 className="text-3xl font-semibold tracking-tight mb-4">
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">
           Calculate Your Meeting Knowledge Loss
         </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Discover how much valuable meeting intelligence your company is losing every month
         </p>
       </div>
@@ -248,8 +248,8 @@ export default function MeetingROICalculatorModern() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
                 </svg>
               </div>
@@ -264,7 +264,7 @@ export default function MeetingROICalculatorModern() {
               {/* Meetings per week */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Meetings per week</label>
+                  <label className="text-sm font-medium text-gray-700">Meetings per week</label>
                   <Badge variant="secondary">{inputs.meetingsPerWeek}</Badge>
                 </div>
                 <Slider
@@ -274,7 +274,7 @@ export default function MeetingROICalculatorModern() {
                   max={50}
                   step={1}
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="flex justify-between text-xs text-gray-500">
                   <span>5</span>
                   <span>50</span>
                 </div>
@@ -283,7 +283,7 @@ export default function MeetingROICalculatorModern() {
               {/* Average duration */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Average meeting duration</label>
+                  <label className="text-sm font-medium text-gray-700">Average meeting duration</label>
                   <Badge variant="secondary">{inputs.averageDuration} min</Badge>
                 </div>
                 <Slider
@@ -293,7 +293,7 @@ export default function MeetingROICalculatorModern() {
                   max={120}
                   step={5}
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="flex justify-between text-xs text-gray-500">
                   <span>15 min</span>
                   <span>120 min</span>
                 </div>
@@ -302,7 +302,7 @@ export default function MeetingROICalculatorModern() {
               {/* Team size */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Average team size</label>
+                  <label className="text-sm font-medium text-gray-700">Average team size</label>
                   <Badge variant="secondary">{inputs.teamSize} people</Badge>
                 </div>
                 <Slider
@@ -312,7 +312,7 @@ export default function MeetingROICalculatorModern() {
                   max={100}
                   step={1}
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="flex justify-between text-xs text-gray-500">
                   <span>3</span>
                   <span>100</span>
                 </div>
@@ -321,7 +321,7 @@ export default function MeetingROICalculatorModern() {
               {/* Hourly rate */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Average hourly rate</label>
+                  <label className="text-sm font-medium text-gray-700">Average hourly rate</label>
                   <Badge variant="secondary">${inputs.hourlyRate}</Badge>
                 </div>
                 <Slider
@@ -331,7 +331,7 @@ export default function MeetingROICalculatorModern() {
                   max={200}
                   step={5}
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="flex justify-between text-xs text-gray-500">
                   <span>$25</span>
                   <span>$200</span>
                 </div>
@@ -344,8 +344,8 @@ export default function MeetingROICalculatorModern() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
@@ -422,10 +422,10 @@ export default function MeetingROICalculatorModern() {
               </div>
             </div>
 
-            <div className="mt-6 pt-6 border-t">
+            <div className="mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={exportResults}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 h-12 px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
               >
                 Export Detailed Analysis
               </button>
@@ -448,7 +448,7 @@ export default function MeetingROICalculatorModern() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
+            <p className="text-gray-600">
               Research shows 80% of meeting insights are lost within 24 hours without proper capture. Your team is losing valuable intelligence every single day.
             </p>
           </CardContent>
@@ -466,7 +466,7 @@ export default function MeetingROICalculatorModern() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
+            <p className="text-gray-600">
               Lindy.ai captures 90%+ of meeting intelligence and builds value over time. Every insight captured makes your team smarter and more efficient.
             </p>
           </CardContent>
