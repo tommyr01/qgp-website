@@ -18,17 +18,51 @@ export default function ROICalculator() {
     followUpTimePerMeeting: 30,
     teamSize: 10,
     avgHourlyRate: 75,
-    toolCost: 99
+    toolCost: 99,
+    meetingTypes: {
+      strategy: 20,
+      standup: 40,
+      client: 25,
+      other: 15
+    },
+    currentEfficiency: 60,
+    industry: 'technology'
   })
 
   const [results, setResults] = useState<CalculationResults | null>(null)
   const [showResults, setShowResults] = useState(false)
 
   const calculateROI = useCallback(() => {
+    // Industry benchmarks for time savings
+    const industryMultipliers = {
+      technology: 0.88,
+      consulting: 0.92,
+      finance: 0.85,
+      healthcare: 0.80,
+      other: 0.85
+    }
+
+    // Meeting type efficiency multipliers
+    const meetingTypeEfficiency = {
+      strategy: 0.90, // Strategy meetings benefit most
+      standup: 0.75,  // Standups already efficient
+      client: 0.85,   // Client meetings moderate benefit
+      other: 0.80     // Other meetings standard benefit
+    }
+
     const weeklyMeetingTime = inputs.weeklyMeetings * inputs.avgMeetingDuration / 60
     const weeklyFollowUpTime = inputs.weeklyMeetings * inputs.followUpTimePerMeeting / 60
-    const totalWeeklyTime = weeklyFollowUpTime
-    const weeklyTimeSaved = totalWeeklyTime * 0.85 // 85% time savings
+    
+    // Calculate weighted time savings based on meeting types
+    const weightedTimeSavings = Object.entries(inputs.meetingTypes).reduce((total, [type, percentage]) => {
+      const typeSavings = (weeklyFollowUpTime * percentage / 100) * meetingTypeEfficiency[type as keyof typeof meetingTypeEfficiency]
+      return total + typeSavings
+    }, 0)
+
+    // Apply industry multiplier and current efficiency factor
+    const industryMultiplier = industryMultipliers[inputs.industry as keyof typeof industryMultipliers]
+    const efficiencyFactor = inputs.currentEfficiency / 100
+    const weeklyTimeSaved = weightedTimeSavings * industryMultiplier * (1 - efficiencyFactor + 0.5)
     
     const weeklyCostSavings = weeklyTimeSaved * inputs.avgHourlyRate * inputs.teamSize
     const monthlyCostSavings = weeklyCostSavings * 4.33
@@ -66,6 +100,91 @@ export default function ROICalculator() {
     }).format(value)
   }
 
+  const exportResults = () => {
+    if (!results) return
+    
+    const exportData = {
+      companyInfo: {
+        teamSize: inputs.teamSize,
+        industry: inputs.industry,
+        avgHourlyRate: inputs.avgHourlyRate
+      },
+      currentState: {
+        weeklyMeetings: inputs.weeklyMeetings,
+        avgMeetingDuration: inputs.avgMeetingDuration,
+        followUpTimePerMeeting: inputs.followUpTimePerMeeting,
+        currentEfficiency: inputs.currentEfficiency,
+        meetingTypes: inputs.meetingTypes
+      },
+      projectedSavings: {
+        weeklyTimeSaved: results.weeklyTimeSaved.toFixed(1),
+        monthlyCostSavings: formatCurrency(results.monthlyCostSavings),
+        annualSavings: formatCurrency(results.annualSavings),
+        breakEvenDays: results.breakEvenDays,
+        efficiencyGain: results.efficiencyGain
+      },
+      toolCost: formatCurrency(inputs.toolCost),
+      calculatedOn: new Date().toISOString().split('T')[0]
+    }
+
+    const dataStr = JSON.stringify(exportData, null, 2)
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
+    
+    const exportFileDefaultName = `meeting-automation-roi-${new Date().toISOString().split('T')[0]}.json`
+    
+    const linkElement = document.createElement('a')
+    linkElement.setAttribute('href', dataUri)
+    linkElement.setAttribute('download', exportFileDefaultName)
+    linkElement.click()
+  }
+
+  const generateReport = () => {
+    if (!results) return
+    
+    const reportContent = `
+# Meeting Automation ROI Report
+
+**Generated on:** ${new Date().toLocaleDateString()}
+
+## Current Situation
+- **Team Size:** ${inputs.teamSize} people
+- **Industry:** ${inputs.industry}
+- **Weekly Meetings:** ${inputs.weeklyMeetings}
+- **Average Meeting Duration:** ${inputs.avgMeetingDuration} minutes
+- **Follow-up Time per Meeting:** ${inputs.followUpTimePerMeeting} minutes
+- **Current Efficiency:** ${inputs.currentEfficiency}%
+
+## Meeting Breakdown
+- **Strategy Meetings:** ${inputs.meetingTypes.strategy}%
+- **Standup Meetings:** ${inputs.meetingTypes.standup}%
+- **Client Meetings:** ${inputs.meetingTypes.client}%
+- **Other Meetings:** ${inputs.meetingTypes.other}%
+
+## Projected Savings
+- **Weekly Time Saved:** ${results.weeklyTimeSaved.toFixed(1)} hours
+- **Monthly Cost Savings:** ${formatCurrency(results.monthlyCostSavings)}
+- **Annual Savings:** ${formatCurrency(results.annualSavings)}
+- **Break-even Time:** ${results.breakEvenDays} days
+- **Efficiency Gain:** ${results.efficiencyGain}%
+
+## Investment
+- **Tool Cost:** ${formatCurrency(inputs.toolCost)}/month
+- **Annual Tool Cost:** ${formatCurrency(inputs.toolCost * 12)}
+- **Net Annual Savings:** ${formatCurrency(results.annualSavings - (inputs.toolCost * 12))}
+
+---
+*Report generated by Quantum Growth Partners Meeting Automation ROI Calculator*
+    `.trim()
+
+    const blob = new Blob([reportContent], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `meeting-automation-roi-report-${new Date().toISOString().split('T')[0]}.md`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="my-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8">
       <div className="max-w-4xl mx-auto">
@@ -79,6 +198,24 @@ export default function ROICalculator() {
             <h3 className="text-xl font-semibold mb-4">Your Current Situation</h3>
             
             <div className="space-y-4">
+              {/* Industry Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Industry
+                </label>
+                <select
+                  value={inputs.industry}
+                  onChange={(e) => setInputs({...inputs, industry: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="technology">Technology</option>
+                  <option value="consulting">Consulting</option>
+                  <option value="finance">Finance</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Weekly meetings
@@ -95,6 +232,95 @@ export default function ROICalculator() {
                   <span>5</span>
                   <span className="font-semibold">{inputs.weeklyMeetings} meetings</span>
                   <span>50</span>
+                </div>
+              </div>
+
+              {/* Current Efficiency */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Current meeting efficiency
+                </label>
+                <input
+                  type="range"
+                  min="20"
+                  max="90"
+                  value={inputs.currentEfficiency}
+                  onChange={(e) => setInputs({...inputs, currentEfficiency: parseInt(e.target.value)})}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>20%</span>
+                  <span className="font-semibold">{inputs.currentEfficiency}%</span>
+                  <span>90%</span>
+                </div>
+              </div>
+
+              {/* Meeting Types */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Meeting type breakdown
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-600">Strategy</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="50"
+                      value={inputs.meetingTypes.strategy}
+                      onChange={(e) => setInputs({
+                        ...inputs,
+                        meetingTypes: {...inputs.meetingTypes, strategy: parseInt(e.target.value)}
+                      })}
+                      className="w-full"
+                    />
+                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.strategy}%</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600">Standup</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="60"
+                      value={inputs.meetingTypes.standup}
+                      onChange={(e) => setInputs({
+                        ...inputs,
+                        meetingTypes: {...inputs.meetingTypes, standup: parseInt(e.target.value)}
+                      })}
+                      className="w-full"
+                    />
+                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.standup}%</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600">Client</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="50"
+                      value={inputs.meetingTypes.client}
+                      onChange={(e) => setInputs({
+                        ...inputs,
+                        meetingTypes: {...inputs.meetingTypes, client: parseInt(e.target.value)}
+                      })}
+                      className="w-full"
+                    />
+                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.client}%</div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600">Other</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="40"
+                      value={inputs.meetingTypes.other}
+                      onChange={(e) => setInputs({
+                        ...inputs,
+                        meetingTypes: {...inputs.meetingTypes, other: parseInt(e.target.value)}
+                      })}
+                      className="w-full"
+                    />
+                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.other}%</div>
+                  </div>
                 </div>
               </div>
 
@@ -245,9 +471,25 @@ export default function ROICalculator() {
                   </ul>
                 </div>
 
-                <button className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
-                  Get Started Today
-                </button>
+                <div className="space-y-2">
+                  <button className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
+                    Get Started Today
+                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={exportResults}
+                      className="flex-1 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    >
+                      Export Data
+                    </button>
+                    <button
+                      onClick={generateReport}
+                      className="flex-1 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    >
+                      Generate Report
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

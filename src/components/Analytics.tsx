@@ -125,12 +125,67 @@ export function useScrollTracking() {
   }, [])
 }
 
+// A/B Testing functionality
+export function useABTest(testName: string, variants: string[]) {
+  const [variant, setVariant] = useState<string>('')
+
+  useEffect(() => {
+    const savedVariant = localStorage.getItem(`ab_test_${testName}`)
+    if (savedVariant && variants.includes(savedVariant)) {
+      setVariant(savedVariant)
+    } else {
+      const randomVariant = variants[Math.floor(Math.random() * variants.length)]
+      setVariant(randomVariant)
+      localStorage.setItem(`ab_test_${testName}`, randomVariant)
+      
+      // Track A/B test assignment
+      trackEvent({
+        action: 'ab_test_assigned',
+        category: 'experiments',
+        label: `${testName}_${randomVariant}`
+      })
+    }
+  }, [testName, variants])
+
+  return variant
+}
+
+// Enhanced event tracking for A/B tests
+export function trackConversion(testName: string, variant: string, conversionType: string) {
+  trackEvent({
+    action: 'conversion',
+    category: 'experiments',
+    label: `${testName}_${variant}_${conversionType}`
+  })
+}
+
+// Engagement tracking
+export function trackEngagement(action: string, details?: Record<string, any>) {
+  trackEvent({
+    action: `engagement_${action}`,
+    category: 'user_behavior',
+    label: JSON.stringify(details)
+  })
+}
+
 // Page view tracking component
 export default function Analytics() {
   useScrollTracking()
 
   useEffect(() => {
     trackPageView(window.location.href)
+    
+    // Track initial page load time
+    const startTime = performance.now()
+    window.addEventListener('load', () => {
+      const loadTime = performance.now() - startTime
+      trackEvent({
+        action: 'page_load_time',
+        category: 'performance',
+        label: 'blog_post',
+        value: Math.round(loadTime)
+      })
+    })
   }, [])
 
   return null

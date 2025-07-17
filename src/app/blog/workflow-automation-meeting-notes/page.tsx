@@ -6,6 +6,12 @@ import ROICalculator from '../../../components/ROICalculator'
 import DownloadSection from '../../../components/DownloadSection'
 import StructuredData from '../../../components/StructuredData'
 import Analytics from '../../../components/Analytics'
+import VideoWalkthrough from '../../../components/VideoWalkthrough'
+import TableOfContents from '../../../components/TableOfContents'
+import ProgressIndicator from '../../../components/ProgressIndicator'
+import ABTestCTA from '../../../components/ABTestCTA'
+import LazyWrapper, { ToolComparisonSkeleton, ROICalculatorSkeleton, VideoWalkthroughSkeleton } from '../../../components/LazyWrapper'
+import SocialShare from '../../../components/SocialShare'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -49,9 +55,11 @@ export default async function MeetingAutomationBlogPost() {
   const afterComparisonParts = contentParts[1]?.split('<h2>Step 6: Measure Your ROI</h2>') || ['', '']
   const betweenComponents = '<h2>Step 1: Choose Your Automation Platform</h2>' + afterComparisonParts[0]
   
-  const afterCalculatorParts = ('<h2>Step 6: Measure Your ROI</h2>' + afterComparisonParts[1]).split('<h2>Your Next Steps</h2>')
+  const afterCalculatorParts = ('<h2>Step 6: Measure Your ROI</h2>' + afterComparisonParts[1]).split('<h2>Real Results from QGP Clients</h2>')
   const beforeDownloads = afterCalculatorParts[0]
-  const afterDownloads = '<h2>Your Next Steps</h2>' + (afterCalculatorParts[1] || '')
+  const afterVideoSection = ('<h2>Real Results from QGP Clients</h2>' + (afterCalculatorParts[1] || '')).split('<h2>Your Next Steps</h2>')
+  const beforeCaseStudies = afterVideoSection[0]
+  const afterDownloads = '<h2>Your Next Steps</h2>' + (afterVideoSection[1] || '')
 
   // Structured data for SEO
   const articleData = {
@@ -106,9 +114,29 @@ export default async function MeetingAutomationBlogPost() {
       <StructuredData type="Article" data={articleData} />
       <StructuredData type="HowTo" data={howToData} />
       <Analytics />
+      <TableOfContents />
+      <SocialShare 
+        title={post.title}
+        url={`https://quantumgrowthpartners.com/blog/workflow-automation-meeting-notes`}
+        description={post.excerpt}
+      />
       <main className="page-wrapper">
+      {/* Print-only header */}
+      <div className="print-only" style={{ display: 'none' }}>
+        <div style={{ borderBottom: '2px solid #000', paddingBottom: '20px', marginBottom: '30px' }}>
+          <h1 style={{ margin: '0 0 10px 0', fontSize: '24pt', fontWeight: 'bold' }}>{post.title}</h1>
+          <p style={{ margin: '0 0 10px 0', fontSize: '14pt', color: '#666' }}>{post.excerpt}</p>
+          <div style={{ fontSize: '12pt', color: '#666' }}>
+            Published: {post.date} | Author: {post.author} | Quantum Growth Partners
+          </div>
+          <div style={{ fontSize: '10pt', color: '#666', marginTop: '5px' }}>
+            Original URL: https://quantumgrowthpartners.com/blog/workflow-automation-meeting-notes
+          </div>
+        </div>
+      </div>
+
       {/* Blog Post Hero */}
-      <section className="section blog-post-hero">
+      <section className="section blog-post-hero no-print">
         <div className="container-default w-container">
           <div className="inner-container _640px center">
             <div className="text-center">
@@ -145,8 +173,13 @@ export default async function MeetingAutomationBlogPost() {
                   dangerouslySetInnerHTML={{ __html: beforeComparison }}
                 />
                 
+                {/* Progress Indicator */}
+                <ProgressIndicator />
+                
                 {/* Interactive Tool Comparison */}
-                <ToolComparison />
+                <LazyWrapper fallback={<ToolComparisonSkeleton />}>
+                  <ToolComparison />
+                </LazyWrapper>
                 
                 {/* Middle part of content */}
                 <div 
@@ -155,7 +188,9 @@ export default async function MeetingAutomationBlogPost() {
                 />
                 
                 {/* ROI Calculator */}
-                <ROICalculator />
+                <LazyWrapper fallback={<ROICalculatorSkeleton />}>
+                  <ROICalculator />
+                </LazyWrapper>
                 
                 {/* Content before downloads */}
                 <div 
@@ -165,6 +200,17 @@ export default async function MeetingAutomationBlogPost() {
                 
                 {/* Download Section */}
                 <DownloadSection />
+                
+                {/* Content before case studies */}
+                <div 
+                  className="rich-text w-richtext"
+                  dangerouslySetInnerHTML={{ __html: beforeCaseStudies }}
+                />
+                
+                {/* Video Walkthrough and Case Studies */}
+                <LazyWrapper fallback={<VideoWalkthroughSkeleton />}>
+                  <VideoWalkthrough />
+                </LazyWrapper>
                 
                 {/* Final part of content */}
                 <div 
@@ -177,27 +223,8 @@ export default async function MeetingAutomationBlogPost() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
-        <div className="container-default w-container">
-          <div className="inner-container _640px center text-center">
-            <h2 className="heading-h2-size text-white mg-bottom-24px">
-              Ready to Get Started?
-            </h2>
-            <p className="paragraph-large text-white/90 mg-bottom-32px">
-              Download our free templates and start automating your meetings today
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-secondary large bg-white text-blue-600 hover:bg-gray-100">
-                Download Templates
-              </button>
-              <Link href="/contact" className="btn-secondary large border-white text-white hover:bg-white/10">
-                Schedule Consultation
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* A/B Tested CTA Section */}
+      <ABTestCTA />
 
       {/* Navigation */}
       <section className="section small">
