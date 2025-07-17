@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from 'react'
 import { trackEvent } from './Analytics'
 
+// TEST DEPLOYMENT: Calculator updated with modern design on 17/07/2025 13:45
+
 interface CalculatorInputs {
   meetingsPerWeek: number
   averageDuration: number
