@@ -1,8 +1,7 @@
 import { getPostBySlug } from '../../../lib/blog'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import MeetingROICalculator from '../../../components/MeetingROICalculator'
-import ToolComparisonTable from '../../../components/ToolComparisonTable'
+import MeetingROICalculatorModern from '../../../components/MeetingROICalculatorModern'
 import StructuredData from '../../../components/StructuredData'
 import Analytics from '../../../components/Analytics'
 import SocialShare from '../../../components/SocialShare'
@@ -47,10 +46,7 @@ export default async function CompanyBrainMeetingDataPost() {
   const contentParts = post.content.split('**Interactive ROI Calculator: Calculate Your Meeting Knowledge Loss**')
   const beforeCalculator = contentParts[0]
   
-  const afterCalculatorParts = contentParts[1]?.split('**Interactive Tool Comparison: Find Your Perfect Match**') || ['', '']
-  const betweenComponents = afterCalculatorParts[0]
-  
-  const afterToolComparison = afterCalculatorParts[1] || ''
+  const afterCalculator = contentParts[1] || ''
 
   // Structured data for SEO
   const articleData = {
@@ -176,21 +172,12 @@ export default async function CompanyBrainMeetingDataPost() {
                 />
                 
                 {/* Meeting ROI Calculator */}
-                <MeetingROICalculator />
-                
-                {/* Middle part of content */}
-                <div 
-                  className="prose prose-lg"
-                  dangerouslySetInnerHTML={{ __html: betweenComponents }}
-                />
-                
-                {/* Tool Comparison Table */}
-                <ToolComparisonTable />
+                <MeetingROICalculatorModern />
                 
                 {/* Final part of content */}
                 <div 
                   className="prose prose-lg"
-                  dangerouslySetInnerHTML={{ __html: afterToolComparison }}
+                  dangerouslySetInnerHTML={{ __html: afterCalculator }}
                 />
               </article>
               
