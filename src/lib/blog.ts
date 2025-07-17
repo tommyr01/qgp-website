@@ -28,12 +28,23 @@ export interface BlogPostMeta {
 }
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
-  // Get file names under /posts
-  const fileNames = fs.readdirSync(postsDirectory)
-  const allPostsData = await Promise.all(
-    fileNames
-      .filter((fileName) => fileName.endsWith('.md'))
-      .map(async (fileName) => {
+  try {
+    // Check if directory exists
+    if (!fs.existsSync(postsDirectory)) {
+      return []
+    }
+
+    // Get file names under /posts
+    const fileNames = fs.readdirSync(postsDirectory)
+    const markdownFiles = fileNames.filter((fileName) => fileName.endsWith('.md'))
+    
+    // Return empty array if no markdown files
+    if (markdownFiles.length === 0) {
+      return []
+    }
+
+    const allPostsData = await Promise.all(
+      markdownFiles.map(async (fileName) => {
         // Remove ".md" from file name to get slug
         const slug = fileName.replace(/\.md$/, '')
 
@@ -54,10 +65,14 @@ export async function getAllPosts(): Promise<BlogPostMeta[]> {
           featured: matterResult.data.featured || false,
         }
       })
-  )
+    )
 
-  // Sort posts by date
-  return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1))
+    // Sort posts by date
+    return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1))
+  } catch (error) {
+    console.error('Error loading posts:', error)
+    return []
+  }
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
@@ -91,8 +106,18 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 }
 
 export function getAllPostSlugs(): string[] {
-  const fileNames = fs.readdirSync(postsDirectory)
-  return fileNames
-    .filter((fileName) => fileName.endsWith('.md'))
-    .map((fileName) => fileName.replace(/\.md$/, ''))
+  try {
+    // Check if directory exists
+    if (!fs.existsSync(postsDirectory)) {
+      return []
+    }
+
+    const fileNames = fs.readdirSync(postsDirectory)
+    return fileNames
+      .filter((fileName) => fileName.endsWith('.md'))
+      .map((fileName) => fileName.replace(/\.md$/, ''))
+  } catch (error) {
+    console.error('Error loading post slugs:', error)
+    return []
+  }
 } 
