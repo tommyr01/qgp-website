@@ -1,500 +1,303 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { trackROICalculation } from './Analytics'
+import { useState, useCallback, useEffect } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Button } from './ui/button'
+import { Slider } from './ui/slider'
+import { trackEvent } from './Analytics'
 
-interface CalculationResults {
-  weeklyTimeSaved: number
-  monthlyCostSavings: number
-  annualSavings: number
-  breakEvenDays: number
-  efficiencyGain: number
+interface CalculatorInputs {
+  meetingsPerWeek: number
+  averageDuration: number
+  teamSize: number
+  hourlyRate: number
 }
 
-export default function ROICalculator() {
-  const [inputs, setInputs] = useState({
-    weeklyMeetings: 15,
-    avgMeetingDuration: 45,
-    followUpTimePerMeeting: 30,
-    teamSize: 10,
-    avgHourlyRate: 75,
-    toolCost: 99,
-    meetingTypes: {
-      strategy: 20,
-      standup: 40,
-      client: 25,
-      other: 15
-    },
-    currentEfficiency: 60,
-    industry: 'technology'
+interface CalculatorResults {
+  monthlyMeetingCost: number
+  knowledgeLossCost: number
+  potentialSavings: number
+  yearlyLoss: number
+}
+
+export default function ROICalculatorShadcn() {
+  const [inputs, setInputs] = useState<CalculatorInputs>({
+    meetingsPerWeek: 15,
+    averageDuration: 45,
+    teamSize: 12,
+    hourlyRate: 75
   })
 
-  const [results, setResults] = useState<CalculationResults | null>(null)
-  const [showResults, setShowResults] = useState(false)
+  const [results, setResults] = useState<CalculatorResults>({
+    monthlyMeetingCost: 0,
+    knowledgeLossCost: 0,
+    potentialSavings: 0,
+    yearlyLoss: 0
+  })
 
   const calculateROI = useCallback(() => {
-    // Industry benchmarks for time savings
-    const industryMultipliers = {
-      technology: 0.88,
-      consulting: 0.92,
-      finance: 0.85,
-      healthcare: 0.80,
-      other: 0.85
-    }
-
-    // Meeting type efficiency multipliers
-    const meetingTypeEfficiency = {
-      strategy: 0.90, // Strategy meetings benefit most
-      standup: 0.75,  // Standups already efficient
-      client: 0.85,   // Client meetings moderate benefit
-      other: 0.80     // Other meetings standard benefit
-    }
-
-    const weeklyMeetingTime = inputs.weeklyMeetings * inputs.avgMeetingDuration / 60
-    const weeklyFollowUpTime = inputs.weeklyMeetings * inputs.followUpTimePerMeeting / 60
+    const { meetingsPerWeek, averageDuration, teamSize, hourlyRate } = inputs
     
-    // Calculate weighted time savings based on meeting types
-    const weightedTimeSavings = Object.entries(inputs.meetingTypes).reduce((total, [type, percentage]) => {
-      const typeSavings = (weeklyFollowUpTime * percentage / 100) * meetingTypeEfficiency[type as keyof typeof meetingTypeEfficiency]
-      return total + typeSavings
-    }, 0)
-
-    // Apply industry multiplier and current efficiency factor
-    const industryMultiplier = industryMultipliers[inputs.industry as keyof typeof industryMultipliers]
-    const efficiencyFactor = inputs.currentEfficiency / 100
-    const weeklyTimeSaved = weightedTimeSavings * industryMultiplier * (1 - efficiencyFactor + 0.5)
+    // Basic calculations
+    const monthlyMeetingHours = (meetingsPerWeek * 4.33) * (averageDuration / 60) * teamSize
+    const monthlyMeetingCost = monthlyMeetingHours * hourlyRate
     
-    const weeklyCostSavings = weeklyTimeSaved * inputs.avgHourlyRate * inputs.teamSize
-    const monthlyCostSavings = weeklyCostSavings * 4.33
-    const annualSavings = monthlyCostSavings * 12
-    const breakEvenDays = (inputs.toolCost / (weeklyCostSavings / 7))
-    const efficiencyGain = (weeklyTimeSaved / (weeklyMeetingTime + weeklyFollowUpTime)) * 100
-
-    const calculationResults = {
-      weeklyTimeSaved,
-      monthlyCostSavings,
-      annualSavings,
-      breakEvenDays: Math.ceil(breakEvenDays),
-      efficiencyGain: Math.round(efficiencyGain)
-    }
-
-    setResults(calculationResults)
-    setShowResults(true)
+    // Knowledge loss calculation (30% of meeting value lost due to poor documentation)
+    const knowledgeLossCost = monthlyMeetingCost * 0.3
     
-    // Track analytics
-    trackROICalculation(calculationResults)
+    // Potential savings with AI meeting tools (assuming 80% reduction in knowledge loss)
+    const potentialSavings = knowledgeLossCost * 0.8
+    
+    // Yearly projections
+    const yearlyLoss = knowledgeLossCost * 12
+    
+    setResults({
+      monthlyMeetingCost,
+      knowledgeLossCost,
+      potentialSavings,
+      yearlyLoss
+    })
   }, [inputs])
 
   useEffect(() => {
-    if (showResults) {
-      calculateROI()
-    }
-  }, [inputs, showResults, calculateROI])
+    calculateROI()
+  }, [calculateROI])
 
-  const formatCurrency = (value: number) => {
+  const handleInputChange = (field: keyof CalculatorInputs, value: number[]) => {
+    setInputs(prev => ({ ...prev, [field]: value[0] }))
+    
+    // Track analytics
+    trackEvent({
+      action: 'roi_calculator_input_change',
+      category: 'engagement',
+      label: `${field}_${value[0]}`,
+      value: value[0]
+    })
+  }
+
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(value)
-  }
-
-  const exportResults = () => {
-    if (!results) return
-    
-    const exportData = {
-      companyInfo: {
-        teamSize: inputs.teamSize,
-        industry: inputs.industry,
-        avgHourlyRate: inputs.avgHourlyRate
-      },
-      currentState: {
-        weeklyMeetings: inputs.weeklyMeetings,
-        avgMeetingDuration: inputs.avgMeetingDuration,
-        followUpTimePerMeeting: inputs.followUpTimePerMeeting,
-        currentEfficiency: inputs.currentEfficiency,
-        meetingTypes: inputs.meetingTypes
-      },
-      projectedSavings: {
-        weeklyTimeSaved: results.weeklyTimeSaved.toFixed(1),
-        monthlyCostSavings: formatCurrency(results.monthlyCostSavings),
-        annualSavings: formatCurrency(results.annualSavings),
-        breakEvenDays: results.breakEvenDays,
-        efficiencyGain: results.efficiencyGain
-      },
-      toolCost: formatCurrency(inputs.toolCost),
-      calculatedOn: new Date().toISOString().split('T')[0]
-    }
-
-    const dataStr = JSON.stringify(exportData, null, 2)
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
-    
-    const exportFileDefaultName = `meeting-automation-roi-${new Date().toISOString().split('T')[0]}.json`
-    
-    const linkElement = document.createElement('a')
-    linkElement.setAttribute('href', dataUri)
-    linkElement.setAttribute('download', exportFileDefaultName)
-    linkElement.click()
-  }
-
-  const generateReport = () => {
-    if (!results) return
-    
-    const reportContent = `
-# Meeting Automation ROI Report
-
-**Generated on:** ${new Date().toLocaleDateString()}
-
-## Current Situation
-- **Team Size:** ${inputs.teamSize} people
-- **Industry:** ${inputs.industry}
-- **Weekly Meetings:** ${inputs.weeklyMeetings}
-- **Average Meeting Duration:** ${inputs.avgMeetingDuration} minutes
-- **Follow-up Time per Meeting:** ${inputs.followUpTimePerMeeting} minutes
-- **Current Efficiency:** ${inputs.currentEfficiency}%
-
-## Meeting Breakdown
-- **Strategy Meetings:** ${inputs.meetingTypes.strategy}%
-- **Standup Meetings:** ${inputs.meetingTypes.standup}%
-- **Client Meetings:** ${inputs.meetingTypes.client}%
-- **Other Meetings:** ${inputs.meetingTypes.other}%
-
-## Projected Savings
-- **Weekly Time Saved:** ${results.weeklyTimeSaved.toFixed(1)} hours
-- **Monthly Cost Savings:** ${formatCurrency(results.monthlyCostSavings)}
-- **Annual Savings:** ${formatCurrency(results.annualSavings)}
-- **Break-even Time:** ${results.breakEvenDays} days
-- **Efficiency Gain:** ${results.efficiencyGain}%
-
-## Investment
-- **Tool Cost:** ${formatCurrency(inputs.toolCost)}/month
-- **Annual Tool Cost:** ${formatCurrency(inputs.toolCost * 12)}
-- **Net Annual Savings:** ${formatCurrency(results.annualSavings - (inputs.toolCost * 12))}
-
----
-*Report generated by Quantum Growth Partners Meeting Automation ROI Calculator*
-    `.trim()
-
-    const blob = new Blob([reportContent], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `meeting-automation-roi-report-${new Date().toISOString().split('T')[0]}.md`
-    link.click()
-    URL.revokeObjectURL(url)
+    }).format(amount)
   }
 
   return (
-    <div className="my-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-2">Calculate Your ROI</h2>
-        <p className="text-center text-gray-600 mb-8">
-          See how much time and money you can save with meeting automation
+    <div className="w-full max-w-4xl mx-auto p-6">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold mb-4">
+          Calculate Your Meeting ROI
+        </h2>
+        <p className="text-muted-foreground">
+          Discover how much you could save with AI-powered meeting intelligence
         </p>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold mb-4">Your Current Situation</h3>
-            
-            <div className="space-y-4">
-              {/* Industry Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Industry
+      <div className="grid lg:grid-cols-2 gap-8">
+        {/* Input Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Meeting Data</CardTitle>
+            <CardDescription>
+              Adjust the sliders to match your current meeting patterns
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Meetings per Week */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  Meetings per Week
                 </label>
-                <select
-                  value={inputs.industry}
-                  onChange={(e) => setInputs({...inputs, industry: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="technology">Technology</option>
-                  <option value="consulting">Consulting</option>
-                  <option value="finance">Finance</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="other">Other</option>
-                </select>
+                <span className="bg-primary/10 text-primary px-2 py-1 rounded-md text-sm font-medium">
+                  {inputs.meetingsPerWeek}
+                </span>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Weekly meetings
-                </label>
-                <input
-                  type="range"
-                  min="5"
-                  max="50"
-                  value={inputs.weeklyMeetings}
-                  onChange={(e) => setInputs({...inputs, weeklyMeetings: parseInt(e.target.value)})}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>5</span>
-                  <span className="font-semibold">{inputs.weeklyMeetings} meetings</span>
-                  <span>50</span>
-                </div>
+              <Slider
+                value={[inputs.meetingsPerWeek]}
+                onValueChange={(value) => handleInputChange('meetingsPerWeek', value)}
+                max={50}
+                min={5}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>5</span>
+                <span>50</span>
               </div>
-
-              {/* Current Efficiency */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Current meeting efficiency
-                </label>
-                <input
-                  type="range"
-                  min="20"
-                  max="90"
-                  value={inputs.currentEfficiency}
-                  onChange={(e) => setInputs({...inputs, currentEfficiency: parseInt(e.target.value)})}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>20%</span>
-                  <span className="font-semibold">{inputs.currentEfficiency}%</span>
-                  <span>90%</span>
-                </div>
-              </div>
-
-              {/* Meeting Types */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Meeting type breakdown
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs text-gray-600">Strategy</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="50"
-                      value={inputs.meetingTypes.strategy}
-                      onChange={(e) => setInputs({
-                        ...inputs,
-                        meetingTypes: {...inputs.meetingTypes, strategy: parseInt(e.target.value)}
-                      })}
-                      className="w-full"
-                    />
-                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.strategy}%</div>
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-600">Standup</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="60"
-                      value={inputs.meetingTypes.standup}
-                      onChange={(e) => setInputs({
-                        ...inputs,
-                        meetingTypes: {...inputs.meetingTypes, standup: parseInt(e.target.value)}
-                      })}
-                      className="w-full"
-                    />
-                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.standup}%</div>
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-600">Client</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="50"
-                      value={inputs.meetingTypes.client}
-                      onChange={(e) => setInputs({
-                        ...inputs,
-                        meetingTypes: {...inputs.meetingTypes, client: parseInt(e.target.value)}
-                      })}
-                      className="w-full"
-                    />
-                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.client}%</div>
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-600">Other</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="40"
-                      value={inputs.meetingTypes.other}
-                      onChange={(e) => setInputs({
-                        ...inputs,
-                        meetingTypes: {...inputs.meetingTypes, other: parseInt(e.target.value)}
-                      })}
-                      className="w-full"
-                    />
-                    <div className="text-xs text-center text-gray-600">{inputs.meetingTypes.other}%</div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Average meeting duration (minutes)
-                </label>
-                <input
-                  type="range"
-                  min="15"
-                  max="120"
-                  step="15"
-                  value={inputs.avgMeetingDuration}
-                  onChange={(e) => setInputs({...inputs, avgMeetingDuration: parseInt(e.target.value)})}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>15</span>
-                  <span className="font-semibold">{inputs.avgMeetingDuration} min</span>
-                  <span>120</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Follow-up time per meeting (minutes)
-                </label>
-                <input
-                  type="range"
-                  min="10"
-                  max="60"
-                  step="5"
-                  value={inputs.followUpTimePerMeeting}
-                  onChange={(e) => setInputs({...inputs, followUpTimePerMeeting: parseInt(e.target.value)})}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>10</span>
-                  <span className="font-semibold">{inputs.followUpTimePerMeeting} min</span>
-                  <span>60</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Team size
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="50"
-                  value={inputs.teamSize}
-                  onChange={(e) => setInputs({...inputs, teamSize: parseInt(e.target.value)})}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>1</span>
-                  <span className="font-semibold">{inputs.teamSize} people</span>
-                  <span>50</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Average hourly rate
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                  <input
-                    type="number"
-                    min="20"
-                    max="500"
-                    value={inputs.avgHourlyRate}
-                    onChange={(e) => setInputs({...inputs, avgHourlyRate: parseInt(e.target.value) || 0})}
-                    className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <button
-                onClick={calculateROI}
-                className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Calculate Savings
-              </button>
             </div>
-          </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold mb-4">Your Potential Savings</h3>
-            
-            {!showResults ? (
-              <div className="flex items-center justify-center h-full text-gray-400">
-                <div className="text-center">
-                  <svg className="w-24 h-24 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            {/* Average Duration */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  Average Duration (minutes)
+                </label>
+                <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm font-medium">
+                  {inputs.averageDuration}min
+                </span>
+              </div>
+              <Slider
+                value={[inputs.averageDuration]}
+                onValueChange={(value) => handleInputChange('averageDuration', value)}
+                max={120}
+                min={15}
+                step={5}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>15min</span>
+                <span>120min</span>
+              </div>
+            </div>
+
+            {/* Team Size */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  Average Team Size
+                </label>
+                <span className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-sm font-medium">
+                  {inputs.teamSize} people
+                </span>
+              </div>
+              <Slider
+                value={[inputs.teamSize]}
+                onValueChange={(value) => handleInputChange('teamSize', value)}
+                max={25}
+                min={3}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>3</span>
+                <span>25</span>
+              </div>
+            </div>
+
+            {/* Hourly Rate */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  Average Hourly Rate
+                </label>
+                <span className="bg-muted text-muted-foreground px-2 py-1 rounded-md text-sm font-medium">
+                  ${inputs.hourlyRate}/hr
+                </span>
+              </div>
+              <Slider
+                value={[inputs.hourlyRate]}
+                onValueChange={(value) => handleInputChange('hourlyRate', value)}
+                max={200}
+                min={25}
+                step={5}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>$25</span>
+                <span>$200</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Results Section */}
+        <div className="space-y-4">
+          {/* Monthly Meeting Cost */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Monthly Meeting Cost</p>
+                  <p className="text-2xl font-bold">{formatCurrency(results.monthlyMeetingCost)}</p>
+                </div>
+                <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
-                  <p>Click &quot;Calculate Savings&quot; to see your results</p>
                 </div>
               </div>
-            ) : results && (
-              <div className="space-y-6">
-                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                  <div className="text-3xl font-bold text-green-700">
-                    {formatCurrency(results.annualSavings)}
-                  </div>
-                  <div className="text-sm text-green-600 mt-1">Annual savings</div>
-                </div>
+            </CardContent>
+          </Card>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-xl font-semibold text-gray-800">
-                      {results.weeklyTimeSaved.toFixed(1)} hrs/week
-                    </div>
-                    <div className="text-sm text-gray-600">Time saved</div>
-                  </div>
-                  
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-xl font-semibold text-gray-800">
-                      {results.efficiencyGain}%
-                    </div>
-                    <div className="text-sm text-gray-600">Efficiency gain</div>
-                  </div>
+          {/* Knowledge Loss Cost */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Monthly Knowledge Loss</p>
+                  <p className="text-2xl font-bold text-destructive">{formatCurrency(results.knowledgeLossCost)}</p>
+                  <p className="text-xs text-muted-foreground">30% of meeting value lost</p>
                 </div>
-
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <div className="text-xl font-semibold text-blue-700">
-                    {results.breakEvenDays} days
-                  </div>
-                  <div className="text-sm text-blue-600">Time to break even</div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-2">What this means:</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-start">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span>Save {formatCurrency(results.monthlyCostSavings)} every month</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span>Reclaim {(results.weeklyTimeSaved * 52).toFixed(0)} hours per year</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span>ROI in less than {Math.ceil(results.breakEvenDays / 7)} weeks</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <button className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
-                    Get Started Today
-                  </button>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={exportResults}
-                      className="flex-1 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                    >
-                      Export Data
-                    </button>
-                    <button
-                      onClick={generateReport}
-                      className="flex-1 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                    >
-                      Generate Report
-                    </button>
-                  </div>
+                <div className="w-12 h-12 bg-destructive rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
                 </div>
               </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
+
+          {/* Potential Savings */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Potential Monthly Savings</p>
+                  <p className="text-2xl font-bold text-green-600">{formatCurrency(results.potentialSavings)}</p>
+                  <p className="text-xs text-muted-foreground">With AI meeting tools</p>
+                </div>
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Yearly Loss */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Yearly Knowledge Loss</p>
+                  <p className="text-2xl font-bold text-purple-600">{formatCurrency(results.yearlyLoss)}</p>
+                  <p className="text-xs text-muted-foreground">Without AI meeting tools</p>
+                </div>
+                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
+
+      {/* Bottom CTA */}
+      <Card className="mt-8">
+        <CardContent className="pt-6 text-center">
+          <h3 className="text-xl font-semibold mb-2">Ready to Stop Losing Knowledge?</h3>
+          <p className="text-muted-foreground mb-4">
+            You're potentially losing {formatCurrency(results.yearlyLoss)} per year in undocumented meeting insights.
+          </p>
+          <Button 
+            size="lg"
+            onClick={() => trackEvent({
+              action: 'roi_calculator_cta_click',
+              category: 'conversion',
+              label: 'meeting_calculator',
+              value: Math.round(results.yearlyLoss)
+            })}
+          >
+            Get Started with AI Meeting Intelligence
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   )
 }
