@@ -1,0 +1,14 @@
+Meeting ID,Meeting Title,Date,Start Time,End Time,Participants,Meeting Type,Recording Link,Transcript,Summary,Key Decisions,Action Items,Status,Created,Last Modified
+MEET-001,Weekly Team Standup,2024-01-22,09:00,09:30,"John Smith, Jane Doe, Bob Wilson",Team Meeting,https://example.com/recording1,[Full transcript would go here],"Discussed Q1 priorities, budget allocation, and new hire timeline","1. Approved Q1 budget of $50k
+2. Decided to hire 2 new developers","1. Jane to post job listings by Jan 25
+2. John to finalize budget proposal by Jan 26
+3. Bob to schedule vendor meetings",Completed,2024-01-22 09:35,2024-01-22 09:35
+MEET-002,Client Project Kickoff,2024-01-22,14:00,15:00,"Sarah Johnson, Mike Chen, Client Team",Client Meeting,https://example.com/recording2,[Full transcript would go here],"Reviewed project scope, timeline, and deliverables for ABC Corp website redesign","1. Confirmed 12-week timeline
+2. Agreed on milestone payment schedule","1. Sarah to send contract by Jan 23
+2. Mike to create project plan by Jan 25
+3. Set up weekly check-ins starting Jan 29",In Progress,2024-01-22 15:15,2024-01-22 15:15
+MEET-003,Product Strategy Session,2024-01-23,10:00,11:30,"Product Team, Engineering Team",Strategy Meeting,https://example.com/recording3,[Full transcript would go here],"Discussed product roadmap for Q1-Q2, prioritized feature requests","1. Launch feature X in February
+2. Delay feature Y to Q2
+3. Add mobile app to roadmap","1. Product team to update roadmap by Jan 26
+2. Engineering to estimate feature X by Jan 30
+3. Schedule user research for mobile app",Scheduled,2024-01-23 11:45,2024-01-23 11:45

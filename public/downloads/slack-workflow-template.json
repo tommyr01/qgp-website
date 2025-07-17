@@ -1,0 +1,134 @@
+{
+  "workflow_name": "Meeting Summary Automation",
+  "description": "Automatically post meeting summaries and action items to Slack",
+  "version": "1.0",
+  "trigger": {
+    "type": "webhook",
+    "name": "meeting_completed",
+    "description": "Triggered when a meeting ends and summary is ready"
+  },
+  "steps": [
+    {
+      "step_id": "1",
+      "action": "format_message",
+      "name": "Format Meeting Summary",
+      "template": {
+        "blocks": [
+          {
+            "type": "header",
+            "text": {
+              "type": "plain_text",
+              "text": "📅 Meeting Summary: {{meeting_title}}"
+            }
+          },
+          {
+            "type": "section",
+            "fields": [
+              {
+                "type": "mrkdwn",
+                "text": "*Date:* {{meeting_date}}"
+              },
+              {
+                "type": "mrkdwn",
+                "text": "*Duration:* {{meeting_duration}}"
+              },
+              {
+                "type": "mrkdwn",
+                "text": "*Participants:* {{participants}}"
+              },
+              {
+                "type": "mrkdwn",
+                "text": "*Recording:* <{{recording_link}}|View Recording>"
+              }
+            ]
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": "*Key Decisions:*\n{{decisions}}"
+            }
+          },
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": "*Action Items:*\n{{action_items}}"
+            }
+          },
+          {
+            "type": "divider"
+          },
+          {
+            "type": "context",
+            "elements": [
+              {
+                "type": "mrkdwn",
+                "text": "Full transcript and details available in <{{airtable_link}}|Airtable>"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step_id": "2",
+      "action": "post_to_channel",
+      "name": "Post to Meeting Summaries Channel",
+      "config": {
+        "channel": "#meeting-summaries",
+        "message": "{{step.1.output}}"
+      }
+    },
+    {
+      "step_id": "3",
+      "action": "create_thread",
+      "name": "Create Discussion Thread",
+      "config": {
+        "parent_message": "{{step.2.message_ts}}",
+        "message": "💬 Use this thread for any questions or discussion about this meeting."
+      }
+    },
+    {
+      "step_id": "4",
+      "action": "notify_assignees",
+      "name": "DM Action Items to Assignees",
+      "config": {
+        "foreach": "{{action_items}}",
+        "send_dm": {
+          "user": "{{item.assignee}}",
+          "message": "📋 You have a new action item from {{meeting_title}}:\n\n*Task:* {{item.description}}\n*Due:* {{item.due_date}}\n\n<{{airtable_link}}|View in Airtable>"
+        }
+      }
+    },
+    {
+      "step_id": "5",
+      "action": "schedule_reminder",
+      "name": "Schedule Follow-up Reminders",
+      "config": {
+        "foreach": "{{action_items}}",
+        "reminder": {
+          "user": "{{item.assignee}}",
+          "time": "{{item.due_date}} - 1 day",
+          "message": "⏰ Reminder: Action item due tomorrow!\n\n{{item.description}}"
+        }
+      }
+    }
+  ],
+  "error_handling": {
+    "on_error": "log_and_notify",
+    "notify_user": "admin@company.com",
+    "fallback_channel": "#automation-errors"
+  },
+  "settings": {
+    "enabled": true,
+    "test_mode": false,
+    "rate_limit": {
+      "max_per_hour": 50,
+      "max_per_day": 200
+    }
+  }
+}

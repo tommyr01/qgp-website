@@ -1,5 +1,6 @@
 import { getPostBySlug, getAllPostSlugs } from '../../../lib/blog'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 
 interface BlogPostProps {
   params: Promise<{
@@ -24,30 +25,61 @@ export default async function BlogPost({ params }: BlogPostProps) {
 
   return (
     <main className="page-wrapper">
+      {/* Blog Post Hero */}
+      <section className="section blog-post-hero">
+        <div className="container-default w-container">
+          <div className="inner-container _640px center">
+            <div className="text-center">
+              <div className="mg-bottom-24px">
+                <div className="badge-primary small light category">
+                  {post.category}
+                </div>
+              </div>
+              <h1 className="heading-h1-size color-neutral-400 mg-bottom-32px">
+                {post.title}
+              </h1>
+              <p className="paragraph-large color-neutral-600 mg-bottom-40px">
+                {post.excerpt}
+              </p>
+              <div className="author-container mg-bottom-48px">
+                <div className="text-300 color-neutral-500">
+                  {post.date} • By {post.author}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog Post Content */}
       <section className="section">
         <div className="container-default w-container">
-          <div className="text-center" style={{ marginBottom: '40px' }}>
-            <div style={{ marginBottom: '16px', fontSize: '14px', color: '#666' }}>
-              {post.category} • {post.date} • By {post.author}
+          <div className="inner-container _640px center">
+            <div className="card blog-post-content">
+              <div className="pd---content-inside-card large">
+                <div 
+                  className="rich-text w-richtext"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              </div>
             </div>
-            <h1 className="color-neutral-400 mg-bottom-40px">
-              {post.title}
-            </h1>
-            <p className="subheading-text">
-              {post.excerpt}
-            </p>
           </div>
-          
-          <div 
-            className="blog-content" 
-            style={{ 
-              maxWidth: '800px', 
-              margin: '0 auto',
-              lineHeight: '1.6',
-              fontSize: '16px'
-            }}
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+        </div>
+      </section>
+
+      {/* Navigation */}
+      <section className="section small">
+        <div className="container-default w-container">
+          <div className="inner-container _640px center">
+            <div className="text-center">
+              <Link 
+                href="/blog" 
+                className="btn-secondary large"
+              >
+                ← Back to Blog
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </main>
