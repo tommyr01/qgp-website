@@ -6,6 +6,7 @@ import ToolComparisonTable from '../../../components/ToolComparisonTable'
 import StructuredData from '../../../components/StructuredData'
 import Analytics from '../../../components/Analytics'
 import SocialShare from '../../../components/SocialShare'
+import CTAButton from '../../../components/CTAButton'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -283,12 +284,12 @@ export default async function CompanyBrainMeetingDataPost() {
                 Every day you wait is another day of valuable insights lost forever. Start building your company brain today.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
-                  onClick={() => window.open('https://lindy.ai', '_blank')}
-                  className="btn-secondary large bg-white text-purple-700 hover:bg-gray-100 font-semibold"
+                <CTAButton 
+                  href="https://lindy.ai"
+                  variant="primary"
                 >
                   Start Free Trial with Lindy.ai
-                </button>
+                </CTAButton>
                 <Link 
                   href="/contact" 
                   className="btn-secondary large border-white text-white hover:bg-white/10"
