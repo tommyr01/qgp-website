@@ -90,9 +90,6 @@ export default function MeetingROICalculatorModern() {
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
           Meeting ROI Calculator
         </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Calculate how much your company is losing from undocumented meeting insights and discover your potential savings with AI meeting intelligence.
-        </p>
       </div>
 
       {/* Calculator Grid */}
