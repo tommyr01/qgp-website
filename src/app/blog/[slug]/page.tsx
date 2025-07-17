@@ -82,25 +82,6 @@ export default async function BlogPost({ params }: BlogPostProps) {
             {/* Sidebar */}
             <aside className="post-sidebar">
               <div className="sidebar-widget">
-                <h3 className="sidebar-title">Share this article</h3>
-                <div className="share-buttons">
-                  <button className="share-btn twitter">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M19 4s-1 1-3 1 2-2 2-2-1 0-3 1-2 2-2 2-1-1-3-1-2 1-2 1 1 3 1 3-3 0-3 0c0 0 3 1 3 3s-1 3-1 3 3 0 3 0-1 1-1 3 2 2 2 2 0-3 2-3 3 1 3 1-1-1-1-3 1-2 1-2 1 0 3 0 2-2 2-2-2 0-2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Twitter
-                  </button>
-                  <button className="share-btn linkedin">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M4 6h12v12H4z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M8 10v6M8 8.5a1.5 1.5 0 0 1 3 0V16M12 10a2 2 0 0 1 4 0v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    LinkedIn
-                  </button>
-                </div>
-              </div>
-              
-              <div className="sidebar-widget">
                 <h3 className="sidebar-title">Table of Contents</h3>
                 <nav className="toc">
                   <ul className="toc-list">
